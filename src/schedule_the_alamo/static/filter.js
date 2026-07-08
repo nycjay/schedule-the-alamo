@@ -58,3 +58,10 @@ function renderFilterBar() {
     ).join('') +
     '<button class="clear-filters" onclick="clearFilters()">Clear all</button>';
 }
+
+// Re-apply active filters after HTMX swaps in fresh results
+document.body.addEventListener('htmx:afterSettle', function() {
+  if (Object.keys(activeFilters).length > 0) {
+    applyFilters();
+  }
+});

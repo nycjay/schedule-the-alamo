@@ -1,0 +1,84 @@
+{
+  "Calendar": {
+    "Cinemas": [
+      {
+        "CinemaId": "2103",
+        "CinemaName": "Lower Manhattan",
+        "Months": [
+          {
+            "Weeks": [
+              {
+                "Days": [
+                  {
+                    "Films": [
+                      {
+                        "FilmName": "BEAUTY AND THE BEAST IMAX",
+                        "FilmRuntime": "144",
+                        "Series": [
+                          {
+                            "SeriesName": null,
+                            "Formats": [
+                              {
+                                "FormatName": "IMAX",
+                                "Sessions": [
+                                  {
+                                    "SessionDateTime": "2026-07-01T18:00:00",
+                                    "SessionStatus": "onsale"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "FilmName": "BEAUTY AND THE BEAST",
+                        "FilmRuntime": "144",
+                        "Series": [
+                          {
+                            "SeriesName": null,
+                            "Formats": [
+                              {
+                                "FormatName": "Digital",
+                                "Sessions": [
+                                  {
+                                    "SessionDateTime": "2026-07-01T20:00:00",
+                                    "SessionStatus": "onsale"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "FilmName": "TERROR TUESDAY: THE BEYOND",
+                        "FilmRuntime": "87",
+                        "Series": [
+                          {
+                            "SeriesName": "Terror Tuesday",
+                            "Formats": [
+                              {
+                                "FormatName": "Digital",
+                                "Sessions": [
+                                  {
+                                    "SessionDateTime": "2026-07-01T21:30:00",
+                                    "SessionStatus": "onsale"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

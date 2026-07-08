@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
+  <title>Schedule the Alamo</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <link rel="stylesheet" href="/static/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+  <script src="/static/filter.js" defer></script>
+</head>
+<body>
+  <div class="header">
+    <h1>Schedule the Alamo</h1>
+    <nav>
+      <a href="/" class="active">Planner</a>
+      <a href="/movies">All Movies</a>
+      <a href="/theaters">Theaters</a>
+    </nav>
+  </div>
+  <div class="container">
+    <form id="planner-form" hx-post="/results" hx-target="#results" hx-swap="innerHTML" hx-indicator="#loading">
+      <div class="layout">
+        <div class="left-panel">
+          <div id="calendar"></div>
+        </div>
+        <div class="right-panel">
+          <div id="dates-container"><!--DATE_ROWS--></div>
+          <button type="submit" class="btn btn-primary">Find Movies</button>
+        </div>
+      </div>
+    </form>
+    <div id="loading" class="loading-indicator">
+      <div class="spinner"></div>
+      <span>Fetching showtimes & ratings…</span>
+    </div>
+    <div id="filter-bar" class="filter-bar"></div>
+    <div id="results"></div>
+  </div>
+  <script>
+    const activeDates = new Set(/*SAVED_DATES*/);
+
+    const fp = flatpickr("#calendar", {
+      inline: true,
+      mode: "multiple",
+      dateFormat: "Y-m-d",
+      defaultDate: [...activeDates],
+      onChange: function(selectedDates) {
+        const dates = selectedDates.map(d => d.toISOString().split('T')[0]);
+        syncDates(dates);
+      }
+    });
+
+    function removeDate(date, el) {
+      el.remove();
+      activeDates.delete(date);
+      const current = fp.selectedDates.filter(d => d.toISOString().split('T')[0] !== date);
+      fp.setDate(current, false);
+      fetch('/dates/' + date, {method: 'DELETE'});
+    }
+
+
+    function syncDates(dates) {
+      const newDates = new Set(dates);
+      for (const d of dates) {
+        if (!activeDates.has(d)) {
+          activeDates.add(d);
+          htmx.ajax('POST', '/dates/add', {target: '#dates-container', swap: 'beforeend', values: {date: d}});
+        }
+      }
+      for (const d of activeDates) {
+        if (!newDates.has(d)) {
+          activeDates.delete(d);
+          const el = document.getElementById('date-' + d);
+          if (el) el.remove();
+          fetch('/dates/' + d, {method: 'DELETE'});
+        }
+      }
+    }
+  </script>
+</body>
+</html>

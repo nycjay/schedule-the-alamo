@@ -27,8 +27,12 @@ def render_showing(
     showing: Showing,
     wishlisted: bool = False,
     rt_score: str | None = None,
+    time_format: str = "12h",
 ) -> str:
-    time_str = showing.showtime.strftime("%I:%M %p").lstrip("0")
+    if time_format == "24h":
+        time_str = showing.showtime.strftime("%H:%M")
+    else:
+        time_str = showing.showtime.strftime("%I:%M %p").lstrip("0")
     dt = showing.showtime.isoformat()
     safe_id = dt.replace(":", "-")
     title = showing.normalized_title
@@ -85,6 +89,7 @@ def render_window_results(
     label: str,
     wishlisted: set[str] | None = None,
     scores: dict[str, str | None] | None = None,
+    time_format: str = "12h",
 ) -> str:
     wishlisted = wishlisted or set()
     scores = scores or {}
@@ -98,6 +103,7 @@ def render_window_results(
             s,
             s.normalized_title in wishlisted,
             scores.get(s.normalized_title),
+            time_format,
         )
         for s in showings
     )

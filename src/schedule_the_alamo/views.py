@@ -3,24 +3,36 @@
 _TIME_OPTIONS = [f"{h:02d}:{m:02d}" for h in range(24) for m in (0, 30)]
 
 
-def time_options_html(selected: str = "") -> str:
+def display_time(t: str, fmt: str) -> str:
+    """Format 'HH:MM' for display. Value always stays 24h."""
+    if fmt == "24h":
+        return t
+    h, m = int(t[:2]), t[3:]
+    suffix = "AM" if h < 12 else "PM"
+    h12 = h % 12 or 12
+    return f"{h12}:{m} {suffix}"
+
+
+def time_options_html(selected: str = "", time_format: str = "12h") -> str:
     opts = []
     for t in _TIME_OPTIONS:
         sel = " selected" if t == selected else ""
-        opts.append(f'<option value="{t}"{sel}>{t}</option>')
+        label = display_time(t, time_format)
+        opts.append(f'<option value="{t}"{sel}>{label}</option>')
     return "\n".join(opts)
 
 
 def time_window_html(
-    date: str, idx: int, start: str = "09:00", end: str = "17:00"
+    date: str, idx: int, start: str = "09:00", end: str = "17:00",
+    time_format: str = "12h",
 ) -> str:
     return (
         f'<div class="time-window" id="window-{date}-{idx}">'
         f"<select name=\"start-{date}[]\">"
-        f"{time_options_html(start)}</select>"
+        f"{time_options_html(start, time_format)}</select>"
         f'<span class="to-label">to</span>'
         f"<select name=\"end-{date}[]\">"
-        f"{time_options_html(end)}</select>"
+        f"{time_options_html(end, time_format)}</select>"
         f'<button type="button" class="remove-btn" '
         f"hx-delete=\"/dates/{date}/window/{idx}\" "
         f"hx-target=\"#window-{date}-{idx}\" "

@@ -18,7 +18,7 @@ from schedule_the_alamo.models import Showing
 from schedule_the_alamo.ratings import get_scores_batch
 from schedule_the_alamo.render import render_window_results
 from schedule_the_alamo.state import TimeWindow, load_state, save_state
-from schedule_the_alamo.views import date_row_html, time_window_html
+from schedule_the_alamo.views import date_row_html, display_time, time_window_html
 
 app = FastAPI()
 _STATIC = Path(__file__).parent / "static"
@@ -40,16 +40,37 @@ def index() -> str:
     for date in sorted(state.windows):
         wins = state.windows[date]
         window_htmls = [
-            time_window_html(date, i, w.start, w.end)
+            time_window_html(date, i, w.start, w.end, state.time_format)
             for i, w in enumerate(wins)
         ]
         date_rows += date_row_html(date, window_htmls)
     # Pass saved dates to JS for flatpickr initialization
     saved_dates_json = json.dumps(sorted(state.windows.keys()))
     template = (_TEMPLATES / "index.html").read_text()
+    tf_label = "12h" if state.time_format == "12h" else "24h"
+    toggle_html = (
+        '<form style="display:inline" method="post" action="/settings/time-format">'
+        f'<button type="submit" class="btn btn-small" title="Toggle time format">'
+        f'{tf_label}</button></form>'
+    )
+    template = template.replace("<!--TIME_TOGGLE-->", toggle_html)
     template = template.replace("/*SAVED_DATES*/", saved_dates_json)
     template = template.replace("<!--DATE_ROWS-->", date_rows)
     return template
+
+
+@app.post("/settings/time-format", response_class=HTMLResponse)
+def toggle_time_format() -> str:
+    """Toggle between 12h and 24h and reload the page."""
+    state = load_state()
+    state.time_format = "24h" if state.time_format == "12h" else "12h"
+    save_state(state)
+    # Full page reload to reflect the new format everywhere
+    return (
+        "<!DOCTYPE html><html><head>"
+        '<meta http-equiv="refresh" content="0;url=/">'
+        "</head><body></body></html>"
+    )
 
 
 @app.post("/dates/add", response_class=HTMLResponse)
@@ -60,7 +81,7 @@ def add_date(date: str = Form()) -> str:
         save_state(state)
     wins = state.windows[date]
     window_htmls = [
-        time_window_html(date, i, w.start, w.end)
+        time_window_html(date, i, w.start, w.end, state.time_format)
         for i, w in enumerate(wins)
     ]
     return date_row_html(date, window_htmls)
@@ -73,7 +94,7 @@ def add_window(date: str) -> str:
     state.windows.setdefault(date, []).append(TimeWindow("09:00", "17:00"))
     save_state(state)
     idx = len(state.windows[date]) - 1
-    return time_window_html(date, idx)
+    return time_window_html(date, idx, time_format=state.time_format)
 
 
 @app.delete("/dates/{date}/window/{idx}", response_class=HTMLResponse)
@@ -135,10 +156,13 @@ async def results(
                 dismissed=state.dismissed,
                 sort=sort,
             )
-            label = f"{date} · {s}–{e}"
+            s_label = display_time(s, state.time_format)
+            e_label = display_time(e, state.time_format)
+            label = f"{date} · {s_label}–{e_label}"
             html_parts.append(
                 render_window_results(
-                    matched, label, state.wishlisted, scores
+                    matched, label, state.wishlisted, scores,
+                    state.time_format,
                 )
             )
 

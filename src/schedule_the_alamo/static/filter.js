@@ -65,3 +65,25 @@ document.body.addEventListener('htmx:afterSettle', function() {
     applyFilters();
   }
 });
+
+// ponytail: constrain end-time to be after start-time within a time-window
+function constrainEndTime(startSel) {
+  const endSel = startSel.closest('.time-window').querySelector('select[name^="end-"]');
+  if (!endSel) return;
+  const startVal = startSel.value;
+  for (const opt of endSel.options) {
+    opt.disabled = opt.value <= startVal;
+  }
+  if (endSel.value <= startVal) {
+    const first = endSel.querySelector('option:not([disabled])');
+    if (first) endSel.value = first.value;
+  }
+}
+
+document.body.addEventListener('change', function(e) {
+  if (e.target.matches('.time-window select[name^="start-"]')) constrainEndTime(e.target);
+});
+
+document.body.addEventListener('htmx:afterSettle', function() {
+  document.querySelectorAll('.time-window select[name^="start-"]').forEach(constrainEndTime);
+});

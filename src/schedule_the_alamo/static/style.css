@@ -26,7 +26,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sa
 /* Header */
 .header { background: linear-gradient(135deg, #1e293b 0%, #334155 100%); color: white; padding: 0.875rem 1.5rem; display: flex; align-items: center; gap: 2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.15); position: sticky; top: 0; z-index: 100; }
 .header h1 { margin: 0; font-size: 1.125rem; font-weight: 700; letter-spacing: -0.02em; }
-.header nav { display: flex; gap: 0.25rem; }
+.header nav { display: flex; gap: 0.25rem; align-items: center; }
 .header nav a { color: #cbd5e1; text-decoration: none; font-size: 0.85rem; padding: 0.35rem 0.75rem; border-radius: 6px; transition: all 0.15s; }
 .header nav a:hover, .header nav a.active { color: white; background: rgba(255,255,255,0.1); }
 
@@ -52,6 +52,8 @@ button { cursor: pointer; font-family: inherit; }
 .btn-primary { background: var(--accent); color: white; box-shadow: 0 1px 2px rgba(37,99,235,0.3); }
 .btn-primary:hover { background: var(--accent-hover); transform: translateY(-1px); box-shadow: 0 2px 4px rgba(37,99,235,0.4); }
 .btn-primary:active { transform: translateY(0); }
+.btn-small { padding: 0.35rem 0.75rem; font-size: 0.85rem; background: transparent; border: none; color: #cbd5e1; cursor: pointer; border-radius: 6px; transition: all 0.15s; }
+.btn-small:hover { background: rgba(255,255,255,0.08); color: white; }
 .add-window-btn { font-size: 0.8rem; color: var(--accent); background: none; border: 1px dashed var(--border); border-radius: var(--radius-sm); padding: 0.35rem 0.75rem; transition: all 0.15s; }
 .add-window-btn:hover { border-color: var(--accent); background: var(--accent-light); }
 .remove-btn { color: var(--text-light); border: none; background: none; font-size: 1.1rem; line-height: 1; padding: 0.2rem; border-radius: 4px; transition: color 0.15s; }
@@ -111,7 +113,7 @@ button { cursor: pointer; font-family: inherit; }
 .rt-score { font-size: 0.75rem; font-weight: 600; color: #dc2626; }
 
 /* Empty states */
-#dates-container:empty::after { content: "← Pick dates from the calendar"; color: var(--text-light); display: block; padding: 2rem 1rem; text-align: center; font-size: 0.9rem; border: 1px dashed var(--border); border-radius: var(--radius); background: var(--card-bg); }
+#dates-container:empty::after { content: "← Pick dates from the calendar"; color: var(--text-light); display: block; padding: 2rem 1rem; text-align: center; font-size: 0.9rem; border: 1px dashed var(--border); border-radius: var(--radius); background: var(--card-bg); margin-bottom: 0.75rem; }
 #results:empty::after { content: "Select dates and times, then click Find Movies"; color: var(--text-light); font-style: italic; display: block; padding: 2rem; text-align: center; font-size: 0.9rem; }
 #planner-form { margin-bottom: 1.5rem; }
 

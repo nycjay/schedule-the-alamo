@@ -24,6 +24,7 @@ class UserState:
     theaters: list[str] = field(default_factory=list)  # selected cinema IDs
     # date -> list of time windows
     windows: dict[str, list[TimeWindow]] = field(default_factory=dict)
+    time_format: str = "12h"  # "12h" or "24h"
 
     def dismiss(self, title: str) -> None:
         self.dismissed.add(title)
@@ -48,6 +49,7 @@ def save_state(state: UserState, path: Path | None = None) -> None:
             date: [{"start": w.start, "end": w.end} for w in wins]
             for date, wins in state.windows.items()
         },
+        "time_format": state.time_format,
     }
     path.write_text(json.dumps(data, indent=2))
 
@@ -66,4 +68,5 @@ def load_state(path: Path | None = None) -> UserState:
         wishlisted=set(data.get("wishlisted", [])),
         theaters=data.get("theaters", []),
         windows=windows,
+        time_format=data.get("time_format", "12h"),
     )
